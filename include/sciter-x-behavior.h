@@ -144,17 +144,23 @@ typedef SBOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEven
       MOUSE_TICK, // mouse pressed ticks
       MOUSE_IDLE, // mouse stay idle for some time
 
-      DROP        = 9,   // item dropped, target is that dropped item 
-      DRAG_ENTER  = 0xA, // drag arrived to the target element that is one of current drop targets.  
-      DRAG_LEAVE  = 0xB, // drag left one of current drop targets. target is the drop target element.  
-      DRAG_REQUEST = 0xC,  // drag src notification before drag start. To cancel - return true from handler.
+      /*OBSOLETE*/ DROP        = 9,   // item dropped, target is that dropped item 
+      /*OBSOLETE*/ DRAG_ENTER  = 0xA, // drag arrived to the target element that is one of current drop targets.  
+      /*OBSOLETE*/ DRAG_LEAVE  = 0xB, // drag left one of current drop targets. target is the drop target element.  
+      /*OBSOLETE*/ DRAG_REQUEST = 0xC,  // drag src notification before drag start. To cancel - return true from handler.
 
       MOUSE_TCLICK = 0xF, // tripple click
 
+      MOUSE_TOUCH_START = 0xFC, // touch device pressed somehow
+      MOUSE_TOUCH_END = 0xFD,   // touch device depressed - clear, nothing on it
+
+      MOUSE_DRAG_REQUEST = 0xFE, // mouse drag start detected event
+
       MOUSE_CLICK = 0xFF, // mouse click event
 
-      DRAGGING = 0x100, // This flag is 'ORed' with MOUSE_ENTER..MOUSE_DOWN codes if dragging operation is in effect.
-                        // E.g. event DRAGGING | MOUSE_MOVE is sent to underlying DOM elements while dragging.
+      /*OBSOLETE*/ DRAGGING = 0x100, // ORed with MOUSE_ENTER...MOUSE_DOWN codes above
+
+      MOUSE_HIT_TEST = 0xFFE,    // sent to element, allows to handle elements with non-trivial shapes. 
 
   };
 
@@ -296,12 +302,17 @@ typedef SBOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEven
 
   enum GESTURE_CMD
   {
-    GESTURE_REQUEST = 0, // return true and fill flags if it will handle gestures.
+    GESTURE_START = 0,
+    GESTURE_MOVE = 1,
+    GESTURE_END = 2,
+
+    // logical events
+    GESTURE_PAN,    // The pan gesture.
     GESTURE_ZOOM,        // The zoom gesture.
-    GESTURE_PAN,         // The pan gesture.
     GESTURE_ROTATE,      // The rotation gesture.
-    GESTURE_TAP1,        // The tap gesture.
-    GESTURE_TAP2,        // The two-finger tap gesture.
+    GESTURE_TAP1,   // The tap gesture, a.k.a. click
+    GESTURE_TAP2,   // The two-finger tap gesture, a.k.a. right-click
+    GESTURE_DOUBLE_TAP
   };
   enum GESTURE_STATE 
   {
@@ -438,29 +449,11 @@ typedef SBOOL SC_CALLBACK SciterBehaviorFactory( LPCSTR, HELEMENT, LPElementEven
       // "grey" event codes  - notfications from behaviors from this SDK
       HYPERLINK_CLICK = 0x80,        // hyperlink click
 
-      //TABLE_HEADER_CLICK,            // click on some cell in table header,
-      //                               //     target = the cell,
-      //                               //     reason = index of the cell (column number, 0..n)
-      //TABLE_ROW_CLICK,               // click on data row in the table, target is the row
-      //                               //     target = the row,
-      //                               //     reason = index of the row (fixed_rows..n)
-      //TABLE_ROW_DBL_CLICK,           // mouse dbl click on data row in the table, target is the row
-      //                               //     target = the row,
-      //                               //     reason = index of the row (fixed_rows..n)
-
       ELEMENT_COLLAPSED = 0x90,      // element was collapsed, so far only behavior:tabs is sending these two to the panels
       ELEMENT_EXPANDED = 0x91,       // element was expanded,
 
       ACTIVATE_CHILD = 0x92,         // activate (select) child,
                                      // used for example by accesskeys behaviors to send activation request, e.g. tab on behavior:tabs.
-
-      //DO_SWITCH_TAB = ACTIVATE_CHILD,// command to switch tab programmatically, handled by behavior:tabs
-      //                               // use it as SciterPostEvent(tabsElementOrItsChild, DO_SWITCH_TAB, tabElementToShow, 0);
-
-      //INIT_DATA_VIEW,                // request to virtual grid to initialize its view
-      
-      //ROWS_DATA_REQUEST,             // request from virtual grid to data source behavior to fill data in the table
-      //                               // parameters passed throug DATA_ROWS_PARAMS structure.
 
       UI_STATE_CHANGED = 0x95,       // ui state changed, observers shall update their visual states.
                                      // is sent for example by behavior:richtext when caret position/selection has changed.

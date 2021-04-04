@@ -1,3 +1,183 @@
+## 4.4.6.5
+
+### Fixes
+
+* fix of breakpoint handling in inspector
+
+## 4.4.6.4
+
+### New features
+
+* + `Element.selection` support.
+* + `Element.onGlobalEvent()` and `Element.offGlobalEvent()`, see : samples.sciter/global-events/README.md for the idea.
+
+### Fixes
+
+* [JSX] fix of line number reports when JSX is used in presence of tabs (`\t`);
+* [Sciter.JS, Reactor] fix of "falsy" values handling.
+* [OSX] better font ascent/descent calculation.
+
+## 4.4.6.3
+
+### New builds/assemblies
+
+* MacOS - inspector.app and usciter.app
+
+### New features
+
+* [sciter.js/JSX] + support of numeric and boolean attributes <td cols=2 valid=true> 
+* [sciter.js] + sample : sdk.js/samples.sciter/lightbox-dialog.
+* [Sciter.JS] window.load(url) - loads document into this window.
+
+### Fixes
+
+* [Sciter][Sciter.JS] Reactor fix of <select|dropdown> reconciliation. See: https://sciter.com/forums/topic/select-behaves-erratically-in-reactor-component/
+* [Sciter.JS] better console.log() output when inspector is not present.
+* [Sciter.JS] behavior:virtual-list - scroll animation outside of virtual scroll functionality.
+* [linux] fix of AV on msgbox close.
+* [inspector/debugger] fix of breakpoint set.
+* [frameset] fix of https://sciter.com/forums/topic/frameset-column-changes-height-when-container-is-resized/ issue.
+* [reactor] fix of missed didMount/willUnmount() call when element changes prototype.
+
+## 4.4.6.2
+
+### New builds/assemblies
+
+* MacOS/ARM - MacOS binaries are universal now - contain as x64 as ARM (M1) code.
+
+### New features
+
+* Sciter.JS.Quark is operational now. Use bat/sh files in bin/quark. Source code of the Quark is in /quark folder.
+* JSX support of HTML style no-value attributes like: <input disabled />
+* `sys.fs.$readfile()` - synchronous file read.
+* `canvas.canvasUpdate(function(gfx){...});` - transactional painitng on `<canvas>`, see [discussion](https://sciter.com/forums/topic/how-to-free-graphics-image/).
+* [API] window::broadcast_event(BEHAVIOR_EVENT_PARAMS event); post/send customs events to all windows of the application. See demos/integration project.
+
+### New samples
+
+* MDView at sdk.js/samples.sciter/applications.quark/mdview - viewer of MD files:
+  * can be compiled as Quark monolitic application;
+  * demonstrates Sciter.JS printing support;
+
+## 4.4.6.1
+
+### New builds/assemblies
+
+* Sciter.JS.Lite - GLFW based demo in demos.lite/sciter-glfw-opengl/
+* Sciter.JS.Lite builds on:
+  * Windows
+  * MacOS
+  * Linux
+
+### New features
+
+1. *CSS* - support of `@keyframes` inside `@set`'s;
+2. *video* - new event "videocoordinate" - allows to coordinate output of multiple `<video>'`s. Coordinated output allows to reduce FPS rate of several videos running at the same time. See: sdk/samples/video/video-25-videos.htm
+3. *Audio*, basic audio playback, see: sdk.js/samples.sciter/audio/test-basic.htm;
+4. [module @storage](docs/md/storage/README.md) - persistent storage, NoSQL DB built into JS runtime.
+5. `sys.fs.$readdir()` - sync version of readdir.
+6. `Color.RGB(0..255,0..255,0..255[,0..255])`
+
+### New samples
+
+1. The `$` - Zepto (micro jQuery) sample, see: sdk.js/samples/$
+2. samples.sciter/sys/folder.htm - `sys.fs.readdir()` demo.
+3. samples.sciter/process/spawn.htm - process spawning demo with stdout redirection. 
+
+### Fixes
+
+* *inspector* fix of style url reporting, see: https://sciter.com/forums/topic/inspector-cant-loads-css-files/
+* `<frame>`, fix of `frame.attributes["src"] = ...;`
+* [core] `flow:vertical-wrap;` fix of stack overflow when percent units used.
+
+
+## 4.4.6.0
+
+### New features
+
+* `behavior:virtual-list` - native virtual list;
+* `element.post(function | event)` - posts either function or event to the element;
+* [JS runtime] `sys.fs.watch(path,callback)` - watch changes on FS (folders and files);
+* [JS runtime] `sys.fs.splitpath(path) -> [dirpath,file]` ;
+* [usctier] LiveReload functionality is operational;
+
+### New samples
+
+* samples.sciter/virtual-list - vurtual list samples;
+
+### New builds/assemblies
+
+* Sciter.JS.Lite - Linux 
+
+## 4.4.5.12
+
+### New samples
+
+* demos/integration - demonstrates native code <-> JavaScript interaction, running native worker threads, exposing native classes and objects, etc.  
+* docs/md - documentation as part of SDK, markdown formatted. 
+* samples.sciter/input-elements/ - home of various samples of built-in input elements.
+* samples.sciter/themes/ - demo of built-in theme (light/dark), MS Metro and Android Material.
+* samples.sciter/tray-icon/ - tray icon demo.
+* samples.sciter/window/ - demo of different types of window chromes (window frame types).
+* samples/markdown/ - demo of RemarkableJS library.
+
+### New features
+
+* graphics.push/popLayer() - clipping(rect,path,bitmap), filters, opacity layers. 
+* graphics.draw(path|text|image|element, {options}) - drawing those objects. 
+* class [Graphics.Text](docs/md/Graphics.Text.md) - text drawing and measurement.
+* class [Graphics.Path](docs/md/Graphics.Path.md) - paths 
+* class [Graphics.Color](docs/md/Graphics.Color.md) - color object (RGBA/HSLA/HSLV) 
+* element.style.colorOf(prop) - getting used color values
+* element.style.pixelsOf(prop) - getting used length values
+* window.isResizable, isMinimizable and other prperties. 
+
+### New builds
+
+* Sciter.JS.Lite - Windows
+* Sciter.JS.Skia - Windows
+* Sciter.JS.Lite - Android
+
+## 4.4.5.10, revision 8422, 2021-01-15
+
+### New
+
+#### JS Runtime
+
+* Immediate mode drawing support, element.paintBackground, element.paintForeground, element.paintContent and element.paintOutline properties/methods.
+
+### Fixes
+
+* debugger/inspector support by sciter.dll and scapp.exe
+
+## 4.4.5.10, revision 8420, 2021-01-13
+
+By this release Sciter.JS has reached BETA phase.
+
+### New
+
+#### HTML/CSS
+
+* [CSS] + `appearance` property. Example `button { appearance:none; }` will suppress default styling of button elements.
+* [CSS] + support of `transition: ... cubic-bezier(x1,y1,x2,y2);` ease function.
+
+#### JS Runtime
+
+* + support of JavaScript debugger in scapp, usciter and user applications. Window shall be created with SW_ENABLE_DEBUG flag in order to be debugable. 
+* Element.onclick and other property-ehandlers.
+* `window.xcall("name"[,arg0,... argN])` and `element.xcall("name"[,arg0,... argN])` - calling methods of native behaviors attached to window and elements.
+
+#### Frameworks
+
+* [PReact](https://preactjs.com/) framework is generally operational "as it is". JSX (built-in native implementation) can be used with PReact by defining `JSX = h;` - `h()` function of PReact is used as a driver of JSX expressions.
+  See: sdk.js/samples/preact/ demos.
+
+### Fixes
+
+* various fixes in HTML/CSS core;
+* QuickJS has upgraded to latest (2020-11-08) version. This fixes several issues in JS core. 
+
+
 ## 4.4.5.9, revision 8396, 2020-12-18
 
 ### New

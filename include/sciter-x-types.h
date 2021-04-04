@@ -178,21 +178,7 @@ enum GFX_LAYER
 
   #define LRESULT long
 
-  #ifdef __LP64__
-    #define TARGET_64
-    #if defined(WINDOWLESS)
-      #define SCITER_DLL_NAME "sciter-lite-64.dylib"
-    #else
-      #define SCITER_DLL_NAME "sciter-osx-64.dylib"
-    #endif
-  #else
-    #define TARGET_32
-    #if defined(WINDOWLESS)
-      #define SCITER_DLL_NAME "sciter-lite-32.dylib"
-    #else
-      #define SCITER_DLL_NAME "sciter-osx-64.dylib"
-    #endif
-  #endif
+  #define SCITER_DLL_NAME "libsciter.dylib"
 
 #elif defined(LINUX)
 
@@ -273,11 +259,11 @@ enum GFX_LAYER
 
   #define WINDOWLESS
 
-  #include <uchar.h>
+  //#include <uchar.h>
   #include <string.h>
 
   #ifndef SBOOL
-  typedef signed char        SBOOL;
+  typedef signed int        SBOOL;
   #endif
   #ifndef TRUE
   #define TRUE (1)

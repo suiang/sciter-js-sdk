@@ -23,7 +23,7 @@
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>usciter</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -262,6 +262,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\demos\usciter\usciter.cpp" />
+    <ClCompile Include="..\..\include\behaviors\behavior_drawing.cpp" />
     <ClCompile Include="..\..\include\sciter-win-main.cpp" />
     <ClCompile Include="..\..\sqlite\sciter-sqlite-db.cpp" />
     <ClCompile Include="..\..\sqlite\sciter-sqlite-rs.cpp" />

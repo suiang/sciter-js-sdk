@@ -5,7 +5,11 @@
 		</Project>
 		<Project filename="inspector.cbp">
 		</Project>
+		<Project filename="integration.cbp">
+		</Project>
 		<Project filename="sciter-sqlite.cbp">
+		</Project>
+		<Project filename="glfw-opengl.cbp">
 		</Project>
 	</Workspace>
 </CodeBlocks_workspace_file>

@@ -7,7 +7,8 @@ export class DOMView extends View
   componentDidMount() {
     if(!this.viewstate.stack)  
       this.loadInitialContent(); 
-    this.channel.onStackHighlight = (stack) => this.showStack(stack);    
+    this.channel.onStackHighlight = (stack) => this.showStack(stack);
+    this.channel.onContentChange = () => this.reloadContent();
   }
 
   componentWillUnmount() {
@@ -18,12 +19,13 @@ export class DOMView extends View
     let content = await this.channel.request("contentOf",nd.uid);
     if( typeof content == "string")
       nd.text = content;
-    else
+    else if(content) {
       nd.children = content;
       for(let ch of nd.children) {
         if(typeof ch == "object")
           ch.parent = nd;
       }
+    }
     return content;
   }
 
@@ -44,7 +46,7 @@ export class DOMView extends View
         }
       this.componentUpdate();  
     } catch(e) {
-      console.error(e);
+      console.error("loadInitialContent:",e,e?.stack);
     }
   }
 
@@ -67,7 +69,28 @@ export class DOMView extends View
     this.dispatchEvent(new Event("domstackchange",{bubbles:true}),true);
   }
 
+  async reloadElement(el) {
+    if(el.children)
+      await this.getContentOf(el);
+    if(el.children) for(let ch of el.children)
+      this.reloadElement(ch);
+    this.componentUpdate();
+  }
+
+  async reloadContent() {
+    let nstack = await this.channel.request("stackOf",null);  
+    if( nstack.uid != this.root.uid )
+      this.loadInitialContent();
+    else {
+      this.reloadElement(this.root);
+      this.componentUpdate();
+    }
+  }
+
   render() {
+
+    if(!this.channel.connected)
+      return <div></div>;
 
     function atts(nd) {
       var list = [];
@@ -140,7 +163,7 @@ export class DOMView extends View
     }
   }
 
-  ["on change"](evt) 
+  ["on input"](evt) 
   {
     let UID = this.value;
     let found = this.findTheirNodeByUID(UID, this.root);
@@ -157,6 +180,8 @@ export class DOMView extends View
 
   static header(channel)
   {
+    if(!channel.connected)
+      return <div/>;
     var list = [];
     function atts(se) {
       let id = se.atts.id;
@@ -225,7 +250,7 @@ class ElementMetrics extends View {
     </section>;
   }
 
-  ["on change at button.units"](evt,button) 
+  ["on input at button.units"](evt,button) 
   {
     this.viewstate.units = button.getAttribute("value");
     console.log(this.viewstate.units);
@@ -255,6 +280,10 @@ export class ElementDetailsView extends View
   }
 
   render() {
+
+    if(!this.channel.connected)
+      return <div></div>;
+
     this.checkDetails();
 
     const list = [];

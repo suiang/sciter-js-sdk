@@ -36,7 +36,7 @@ namespace sciter
     archive& operator=(const archive&);
   public:
     archive():har(0) {}
-    // open archive blob:
+    // open archive blob (NOTE: archive does not copy the data - it has to be available while archive is used )
     bool open( LPCBYTE data, UINT data_length ) { close(); har = SAPI()->SciterOpenArchive(data,data_length); return har != 0; }
     bool open( aux::bytes data ) { return open( data.start, UINT(data.length) ); }
     void close() { if(har) SAPI()->SciterCloseArchive(har); har = 0; }
@@ -253,6 +253,21 @@ namespace sciter
         return call_function(name,4,argv);
       }
 
+      // will post or send custom event to all windows in this GUI thread
+      // To subscribe on such events use this in JS:
+      //   Window.this.on("event-name",function(evt) {
+      //     ...
+      //   });
+      static bool broadcast_event(BEHAVIOR_EVENT_PARAMS evt, bool post = true)
+      {
+        assert(evt.name);
+        evt.cmd = CUSTOM;    // only custom, named events here 
+        evt.heTarget = NULL; // heTarget must be null to dispatch it to all windows
+        SBOOL handled = false;
+        SCDOM_RESULT r = SciterFireEvent(&evt, post, &handled);
+        assert(r == SCDOM_OK); (void)r;
+        return handled != 0;
+      }
 
   };
 

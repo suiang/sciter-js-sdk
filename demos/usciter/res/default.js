@@ -1,13 +1,13 @@
 import { $, on } from "@sciter";
-import { launch } from "@env";
+import { launch, home, PLATFORM } from "@env";
+import * as sys from "@sys";
 import { DropZone } from "drop-zone.js";
+import * as Settings from "settings.js";
+import * as LiveReload from "live-reload.js";
 
-const APP_NAME = "jsciter.app";
+const APP_NAME = "usciter.js.app";
 
-//include "settings.js";
-//include "drop-zone.js";
 //include "live-reload.tis";
-
 
 const view = Window.this;
 
@@ -29,16 +29,7 @@ globalThis.test = function(param) {
   return param;
 }
 
-function loadFile(fn)
-{
-  //liveReload.reset();
-  filename = fn;
-  content.frame.loadFile(fn, true);
-  $("button#reload").state.disabled = false;
-  inspectorButton.state.disabled = false;
-  //if(debugIsActive)
-  //  view.launchDebugView();
-
+function updateCaption() {
   var croot = content.frame.document;
   if(!croot) return;
   var title = croot.$("head>title");
@@ -51,6 +42,23 @@ function loadFile(fn)
   }
 }
 
+function loadFile(fn)
+{
+  //liveReload.reset();
+  filename = fn;
+  content.frame.debugMode = true;
+  content.frame.loadFile(fn);
+  $("button#reload").state.disabled = false;
+  inspectorButton.state.disabled = false;
+  updateCaption();
+}
+
+function reloadFile()
+{
+  content.frame.loadFile(filename);
+  updateCaption();
+}
+
 on("click","button#open", function() {
     var fn = view.selectFile("open",file_filter);
     if( fn ) 
@@ -59,11 +67,8 @@ on("click","button#open", function() {
 
 on("click","button#reload", function () {
     //liveReload.reset();
-    if( filename ) {
-      loadFile(filename);
-      //if(debugIsActive)
-      //  view.launchDebugView();
-    }
+    if( filename )
+      reloadFile();
   })
 
 on("click", "button#open-in-view", function() {
@@ -72,24 +77,24 @@ on("click", "button#open-in-view", function() {
     view.load(fn);
 })
 
-function setTheme(lightAmbience, blurbehind) {
+function setTheme(lightAmbience, blurBehind) {
   var bg = $("button#glass");
   if( lightAmbience ) {
-    view.windowBlurbehind = blurbehind ? "light" : "none";
+    view.blurBehind = blurBehind ? "light" : "none";
     document.attributes["theme"] = "light";
     bg.state.checked = true;
   }
   else {
-    view.windowBlurbehind = blurbehind ? "dark" : "none";
-    self.attributes["theme"] = "dark";
+    view.blurBehind = blurBehind ? "dark" : "none";
+    document.attributes["theme"] = "dark";
     bg.state.checked = false;
   }
 }
 
 function onMediaChange() {
-  var blurbehind = view.mediaVar("ui-blurbehind"); // WM is blurbehind capable and uses it now
+  var blurBehind = view.mediaVar("ui-blurbehind"); // WM is blurbehind capable and uses it now
   var lightAmbience = view.mediaVar("ui-ambience") == "light"; // WM uses light theme
-  setTheme(lightAmbience, blurbehind);
+  setTheme(lightAmbience, blurBehind);
 }
 
 function setSystemGlass(onOff) {
@@ -107,17 +112,34 @@ function setSystemGlass(onOff) {
   }
 }
 
-on("click", "button#system-glass", function()
+on("click", "button#system-glass", function(evt,button)
 {
-  setSystemGlass(this.value);
-  //saveState();
+  setSystemGlass(button.value);
+  Settings.saveState();
 });
 
-on("click", "button#glass", function()
+on("click", "button#glass", function(evt,button)
 {
-  setTheme(this.value, true);
-  //saveState();
+  setTheme(button.value, true);
+  Settings.saveState();
 });
+
+on("click", "button#inspector", async function() 
+{
+  const SUFFIX = { Windows: ".exe", OSX: ".app" };
+  const PREFIX = { Windows: "\\", OSX: "/../../../" };
+
+  let inspectorPath = home((PREFIX[PLATFORM] || "") + "inspector" + (SUFFIX[PLATFORM] || ""));
+
+  try {
+    await sys.fs.stat(inspectorPath);
+    launch(inspectorPath);
+  } catch (e) {
+    Window.modal(<alert>Cannot find {inspectorPath}</alert>);
+  }
+  
+});
+
 
 DropZone { 
   container: content,
@@ -128,39 +150,21 @@ DropZone {
     else 
       loadFile(files);
     }
-}
+};
 
-/*var liveReload = new LiveReload(function() {
-  if( filename ) {
-    content.load(filename);
-    if(debugIsActive)
-      view.launchDebugView();
-  }
+Settings.init(APP_NAME).then(function(){
+  Window.this.state = Window.WINDOW_SHOWN;
 });
 
-event click $(button#live-reload)
-{
-  if(this.value) {
-    liveReload.start();
-  } else {
-    liveReload.stop();
-  }
-}*/
 
-/*event change-detected {
-  $(button#live-reload).state.visited = true;
-}
-event change-processed {
-  $(button#live-reload).state.visited = false;
-}*/
-
-/*Settings.add
+Settings.add
 {
   store: function(data)
     {
-      data.glass = {
-        useSystem : $(button#system-glass).state.checked;  
-        lightTheme : $(button#glass).state.checked; 
+      data.glass = 
+      {
+        useSystem : document.$("button#system-glass").state.checked,
+        lightTheme : document.$("button#glass").state.checked
       };
     },
   restore: function(data) 
@@ -173,8 +177,31 @@ event change-processed {
         }
       }
     }
-};*/
+};
 
+const btnLiveReload = $("button#live-reload");
+
+LiveReload.attachTo(content);
+
+LiveReload.onReload( function () {
+  if( filename )
+    loadFile(filename);
+  // indication of pending change reload
+  btnLiveReload.state.visited = false;
+}); 
+
+LiveReload.onChange( function() {
+  btnLiveReload.state.visited = true;
+}); 
+
+btnLiveReload.on("click", function(evt,button)
+{
+  if(button.value)
+    LiveReload.start(filename);
+  else
+    LiveReload.stop();
+  return true;
+});
 
 /*on("click", "button#help", function() 
 {
@@ -197,28 +224,5 @@ event change-processed {
   };
 });
 
-
-event click $(button#inspector)
-{
-  if( var connectToInspector = view.connectToInspector ) {
-
-    const SUFFIX = { Windows: ".exe", OSX: ".app" };
-    const PREFIX = { Windows: "", OSX: "../../../" };
-
-    var inspectorPath = System.home((PREFIX[System.PLATFORM] || "") + "inspector" + (SUFFIX[System.PLATFORM] || ""));
-    
-    if( !System.scanFiles(inspectorPath) ) {
-      view.msgbox(#alert, "Cannot find " + inspectorPath);
-      return;
-    }
-    Sciter.launch(inspectorPath);
-    self.timer(500ms, function() { connectToInspector($(frame#content)) });
-    
-  }
-}
-
-function self.ready() {
-  Settings.restore();
-}
 */
 
