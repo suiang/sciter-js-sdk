@@ -63,10 +63,10 @@ export class DebuggerView extends View
     return <section #debugger {atts} styleset="debugger.css#debugger">
       <toolbar>
         <caption>debug:</caption>
-        <button .icon #continue disabled={!atbreakpoint} title="F5 - continue"></button>
-        <button .icon #step-over disabled={!atbreakpoint} title="F10 - step over"></button>
-        <button .icon #step-in disabled={!atbreakpoint} title="F11 - step in"></button>
-        <button .icon #step-out disabled={!atbreakpoint} title="SHIFT+F11 - step out"></button>
+        <button .icon #continue disabled={!atbreakpoint} accesskey="!F5" title="F5 - continue"></button>
+        <button .icon #step-over disabled={!atbreakpoint} accesskey="!F10" title="F10 - step over"></button>
+        <button .icon #step-in disabled={!atbreakpoint} accesskey="!F11" title="F11 - step in"></button>
+        <button .icon #step-out disabled={!atbreakpoint} accesskey="!_F11" title="SHIFT+F11 - step out"></button>
         <button .icon #stop title="SHIFT+F5 - stop"></button>
       </toolbar>
       <ul#callstack>{callstack}</ul>
@@ -129,7 +129,7 @@ export class DebuggerView extends View
       </li>;
 */      
 
-return <li key={index.toString()} {atts}>
+    return <li key={index.toString()} {atts}>
         <caption><b .funcname>{item.name}</b><FileUrl href={item.filename} lineno={item.lineno} /></caption>
         {variables}
       </li>;
