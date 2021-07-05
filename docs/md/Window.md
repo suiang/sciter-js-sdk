@@ -4,7 +4,9 @@ Instances of the Window class represent desktop windows.
 
 `Window.this` is a reference to current window object - instance of Window class where HTML document is loaded.
 
-#### constructor:
+NOTE: the _window_ below is an instance of Sciter's Window class - e.g. `Window.this` but not that strange "window" thing of browsers. 
+
+## constructor:
 
 * `new Window {params}`
 
@@ -27,8 +29,18 @@ Instances of the Window class represent desktop windows.
   * `params.client` : true | false - if `true` then x,y,w,h are coordinates of desired window client box on the screen;
   * `params.alignment` : 1..9 - optional, alignment of the window on monitor, if -1..-9 and parent is provided then it aligns the window against parent window.
   * `params.screen` : integer - optional, number of monitor on multi-home systems.
+  * `params.state` : - optional - window state, is one of:
 
-#### properties:
+    * `Window.WINDOW_HIDDEN`
+    * `Window.WINDOW_SHOWN` - default type
+    * `Window.WINDOW_MAXIMIZED`
+    * `Window.WINDOW_MINIMIZED`
+    * `Window.WINDOW_FULL_SCREEN`
+
+  * `params.url` : string - optional, window html source code file.
+  * `params.parameters` : array | string | object, ... - optional, extra parameters to pass to the new window.
+
+## properties:
  
   * `window.state` - read/write, one of:
     * `Window.WINDOW_SHOWN`
@@ -48,8 +60,11 @@ Instances of the Window class represent desktop windows.
   * `window.isEnabled` - read/write, boolean, true if the window is allowed to accept user's input.
   * `window.aspectRatio` - read/write, float, width to height ratio to keep on window resizes.
   * `window.eventRoot = element | null` - if set by element, short circuits all UI events to that element and its children as if the window contains only that element. Used in lightbox dialog scenarios (see: samples.sciter/lightbox-dialog).
+  * `window.focus` - read/write, DOM element in focus.
+  * `window.parent` - read-only, Window | null - parent window of this one.
+  * `window.document` - read-only, Document - root document of the window.
 
-#### methods:
+## methods:
 
   * `window.box(boxPart,boxOf[,"screen"]):[...]` reports geometry of the window, where:
   
@@ -81,7 +96,7 @@ Instances of the Window class represent desktop windows.
   * `window.off("eventname" | handler)` - unsubscribe event handler either by name, namespace or handler reference  
   * `window.xcall(name:string [, arg0, ..., argN]): any`
 
-    Interaction with native behaviors attached to the window. `Window.this.xcall("foo")` will end up in [`handle_scripting_call()`](https://github.com/c-smile/sciter-js-sdk/blob/main/include/sciter-x-behavior.h#L749) of native behavior attached to the window using [SciterWindowAttachEventHandler](https://github.com/c-smile/sciter-js-sdk/blob/main/include/sciter-x-behavior.h#L898) API.
+    Interaction with native behaviors attached to the window. `window.xcall("foo")` will end up in [`handle_scripting_call()`](https://github.com/c-smile/sciter-js-sdk/blob/main/include/sciter-x-behavior.h#L749) of native behavior attached to the window using [SciterWindowAttachEventHandler](https://github.com/c-smile/sciter-js-sdk/blob/main/include/sciter-x-behavior.h#L898) API.
 
   * `window.trayIcon({image: Graphics.Image, text: string})` - show tray icon with the image and tooltip text.
 
@@ -107,25 +122,61 @@ Instances of the Window class represent desktop windows.
     * `"dimension"` - [w,h], array, dimension of the rectangle.
     * `"left"`,`"top"`,`"right"`,`"bottom"`,`"width"`,`"height"` - individual integers.
 
-  * `Window.this.modal(JSX) : any` - shows message box: `<info>..</info>`, `<alert>..</alert>`, `<error>..</error>`, `<question>..</question>`.
-  * `Window.this.modal{params} : any` - shows new window as dialog, for params see `new Window {params}` above. The function returns window close value of `Window.this.close(valToReturn)` call inside the window. 
+  * ##### `window.modal(JSX) : any` 
+    
+    shows message box: `<info>..</info>`, `<alert>..</alert>`, `<error>..</error>`, `<question>..</question>`.
+  
+  * ##### `window.modal({params}) : any`
+    
+    shows new window as dialog, for params see `new Window({params})` above. The function returns window close value of `window.close(valToReturn)` call inside the window. 
 
-  * `Window.this.performDrag(data:object, mode: "copy" | "move", dragIcon: Image | Element[, dragIconXoff:int, dragIconYoff:int] ): null | "copy" | "move"` - performs drag-and-drop using system D&D mechanism.
+  * `window.performDrag(data:object, mode: "copy" | "move", dragIcon: Image | Element[, dragIconXoff:int, dragIconYoff:int] ): null | "copy" | "move"` - performs drag-and-drop using system D&D mechanism.
 
     `data` is an object that may contain one or several fields: 
     * `text: string` - plain text data;
     * `html: string` - HTML data; 
     * `file : [path1,path2,...] | path0` - single or multiple file names;
     * `json`: any - any data that can be JSON.stringify'ed;
+
+  * ##### `window.focusable(dir [,reference:element]): element`
     
-#### class methods and properties:
+    The functions allows to enumerate elements in tab order. _dir_ there is one of:
 
-  * `Window.this` - instance of Window class - this window reference;
-  * `Window.screenBox(monitor:integer, what, boxPart)` - reports geometry and information of the given monitor. For _what_ and _boxPart_ parameters see window.screenBox() method above.
+    * "next" - next focusable element after the _reference_;
+    * "prior" - previous focusable element after the _reference_;
+    * "first" - first focusable DOM element on the window;
+    * "last" - last focusable DOM element on the window;
 
-#### events
+    You can assign found element to `window.focus = element` set focus on it.
 
-Use `Window.this.on("eventname", handler)` to subscribe to these events: 
+    
+## class methods and properties:
+
+  * `Window.this` 
+    
+    instance of Window class - this window reference;
+
+  * `Window.screenBox(monitor:integer, what, boxPart)` 
+   
+    reports geometry and information of the given monitor. For _what_ and _boxPart_ parameters see window.screenBox() method above.
+
+  * `Window.elementAt(screenX,screenY):Element` 
+  
+    returns DOM element under screenX/screenY position. 
+    Note: this method may return DOM element belonging to any Sciter window in current process. 
+
+  * `Window.ticks():milliseconds`
+
+    returns value of internal timer. 
+
+  * `Window.post( ge: Event )`
+
+    posts global event *ge* to all windows in current process.   
+
+
+## events
+
+Use `window.on("eventname", handler)` to subscribe to these events: 
 
   * `"statechange"` - `window.state` flag have changed. 
   * `"resolutionchange"` - after window moved to another monitor with different resolution, or user have changed screen resolution. 
@@ -135,5 +186,5 @@ Use `Window.this.on("eventname", handler)` to subscribe to these events:
   * `"replacementend"` - user start/end moving or resizing window chrome.
   * `"move"` - user moved the window.
   * `"size"` - user changed size of the window.
-  * <a name="trayiconclick"></a>`"trayiconclick"` - click on tray icon.
+  * <a id="trayiconclick"></a>`"trayiconclick"` - click on tray icon.
 

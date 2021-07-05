@@ -12,7 +12,8 @@
 * `event.data`
 * `event.details`
 * `event.keyCode`
-* `event.altKey`
+* `event.code` string representation of keyCode "KeyENTER", "KeyF1"...
+* `event.altKey` true/false
 * `event.ctrlKey`
 * `event.metaKey`
 * `event.shiftKey`
@@ -23,11 +24,16 @@
 * `event.screenX`
 * `event.screenY`
 
+* `event.deltaX` - wheel deltas
+* `event.deltaY`
+
+
 #### properties (Sciter specific):
 
 * `event.x` - sciter specific, coordinates are relative
 * `event.y` - to `event.currentTarget`
 * `event.source` - used in some events to indicate auxiliary "source" element. 
+* `event.isOnIcon` - mouse events, it is "truthy" when mouse is on element's icon. Element icon is an element's foreground-image (if any) so event.isOnIcon is on when mouse is over area where the image is rendered.
 
 #### methods:
 
@@ -108,13 +114,18 @@
 
 #### Document lifecycle
 
-* `"close"` | `"unload"`
-* `"beforeunload"`
-* `"closerequest"`
+Closing:
 
-* `"ready"` | `"DOMContentLoaded"` 
-* `"parsed"` 
-* `"complete"` 
+* `"close"` | `"unload"` - document is closed and about to be deleted soon.
+* `"beforeunload"` - document is about to be unloaded, script namespace is still operational.
+* `"closerequest"` - first phase of document closure, it can be rejected at this point by calling `event.preventDefault()`. 
+
+Loading:
+
+* `"parsed"` - document just got a DOM structure, scripts are not run yet. This event can be handled by document container only (window or frame). 
+* `"ready"` | `"DOMContentLoaded"` - document loaded, DOM is parsed, scripts are loaded and run.
+* `"complete"` - document loaded in full scripts wer run, all resources defined in HTML are loaded.
+
 
 #### Element's state change
 
@@ -150,3 +161,6 @@
 * `"videocoordinate"`
 * `"videoframeready"`
 
+## MISC
+
+- [Event handling in Sciter](https://sciter.com/event-handling-in-sciter/)

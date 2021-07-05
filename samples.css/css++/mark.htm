@@ -13,41 +13,46 @@
           }
 
         </style>
-        <script type="text/tiscript">
+      <script>
 
           var textToLookup = "bar"; 
 
           function highlightFound(ta) 
           {
-             var textNode = ta.firstNode; // getting text node of text area
-             var text = textNode.text;             
+          const range = new Range();
+          var textNode = ta.firstChild; // getting text node of text area
+          var text = textNode.textContent;             
              // clear mark 
              {
-               var bookmarkStart = [bookmark:textNode, 0, false];
-               var bookmarkEnd = [bookmark:textNode, text.length, false];
-               Selection.clearMark(bookmarkStart,bookmarkEnd,"found");
+            range.setStart(textNode, 0);
+            range.setEnd(textNode, text.length);
+            range.clearMark("found");
              }
              // apply mark to first found word if any
              var pos = text.indexOf(textToLookup);
              if( pos >= 0) {
-               var bookmarkStart = [bookmark:textNode, pos, false];
-               var bookmarkEnd = [bookmark:textNode, pos + textToLookup.length, false];
-               Selection.applyMark(bookmarkStart,bookmarkEnd,"found");
+            range.setStart(textNode, pos);
+            range.setEnd(textNode, pos + textToLookup.length);
+            range.applyMark("found");
              }
           }
 
           // initial higlightion
-          highlightFound($(textarea));
+        highlightFound(document.$("textarea"));
 
-          // on change higlightion
-          event change $(textarea) { highlightFound(this); }
-          event change $(input#what) { textToLookup = this.value; highlightFound($(textarea)); }
+        document.on("change","textarea", function(evt, ta) {
+          highlightFound(ta);
+        });
 
+        document.on("change","input#what", function(evt, input) {
+          textToLookup = input.value; 
+          highlightFound(document.$("textarea"));
+        });
         </script>
     </head>
     <body>
 
-<h2>Demo of CSS ::mark(name) pseudo-element styling</h2>
+  <h2>Demo of CSS ::mark(name) pseudo-element styling</h2>
 
      Text to lookup: <input|text #what value="bar" />
 

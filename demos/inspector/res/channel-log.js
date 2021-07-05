@@ -63,7 +63,33 @@ export class ChannelLog extends Element
       items: [toeval]
     })
     this.channel.notify("toeval",toeval);
-    return false; // do not propagate, consumed
+    return true; // do not propagate, consumed
   }
 
+  list2clipboard() {
+    var text = "";
+    for(var opt of this.$$("li")) {
+      if(text) text += "\r\n";
+      text += opt.textContent;
+    }  
+    Clipboard.writeText(text);
+  }
+
+  ["on keydown"] (evt) {
+    if( evt.code === "KeyC" && evt.ctrlKey) { 
+      this.list2clipboard(); 
+      return true; 
+    }
+  }
+  
+  ["on click at menu#for-log-list>li[command='edit:copy']"](evt, menu) { 
+    this.list2clipboard();
+    return true;
+  }
+  
+  ["on click at menu#for-log-list>li[command='edit:clear']"](evt, menu) {
+    this.channel.theirLogs = [];
+    this.componentUpdate();
+    return true;
+  }
 }

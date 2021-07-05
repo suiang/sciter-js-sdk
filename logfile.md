@@ -1,3 +1,146 @@
+## 4.4.8.3
+
+### New features:
+
+* [reactor] `this(props,kids)` method in reactive components, a.k.a Reactor's constructor.
+* components, support of `>` in event handling selectors ["on click at >child"]() to match immediate child of `this`.
+
+### Fixes:
+
+* [css variables] fix of variable value resolving in cascaded rules.
+* [vue|preact] compatibility, element.checked property.
+* Fix of AV in timer in some cases.
+* `fetch()`, allow use of relative URLs.
+* [virtual-list] first|lastVisibleItem, fix of AV on empty list.
+* [virtual-list] touchpad scrolling fix on MacOS.
+* fix of sdk.js/samples.sciter/drag-n-drop/simplest.htm demo.
+
+## 4.4.8.2
+
+### Fixes:
+
+* inspector fix.
+* element.innerHTML fix.
+
+## 4.4.8.1
+
+### New features:
+
+* [css] + support of + general sibling combinator (`~`):  `p ~ span { color: red; }`
+* `behavior:hyperlink` support of `target="@system"` attribute to open link in system's default application (default browser for example) rather than Sciter.
+* [module sciter], new functions
+  * `sciter.compress()`
+  * `sciter.decompress()`
+  * `sciter.toBase64()`
+  * `sciter.fromBase64()`
+  * `sciter.md5()`
+  * `sciter.crc32()`
+
+### Fixes:
+
+* `devicePixelRatio` fix.
+
+## 4.4.8.0
+
+### New features:
+
+* CSS variables: 
+  * now support all types of values (used to be just lengths and colors);
+  * Sciter supports as its own `var(name)` as standard `--name` variable declarations. See /samples.css/css-variables;
+* [html-window] window-min-width/height, window-max-width/height attributes.
+* [css] svg image used as background/foreground image inherits stroke, fill colors and set of CSS variables of element where it is applied.
+* zepto patch for mouseenter/mouseleave to work in Sciter. Sciter supports mouseenter/leave events but not mouseove/out.
+
+### Fixes:
+
+* [JS DOM API] fix of <select|dropdown> handling, os it is compatible now with Mithril/PReact, Vue, etc.;
+* dispatchEvent preventing recursive call;
+* virtual-list fixes;
+* [QuickJS] `getTimezoneOffset()` implementation for Windows so Date reports values properly.
+
+## 4.4.7.8
+
+### New features:
+
+* highlightion API, new methods:
+  * `range.marks()`
+  * `range.setToMark(name)` 
+  * `element.rangeFromPoint(x,y)` 
+  
+  See /samples.sciter/editor-plaintext/highlighting-marks.htm
+
+* `fetch()` API - POSTing JSON and other textual or binary data;
+
+* sdk.js/samples.sciter/reactor-form/ - forms handling in reactor, inspired by Formik/ReactJS;
+
+* SDK headers: SOM_PROP_EX + SOM_RO_PROP_EX
+
+### Fixes:
+
+* fix of window.close(val) for main window;
+* virtual-list scroll fixes;
+* fix of css::prototype and JS subclassing;
+* optimiziation of `<img src="....svg">` handling;
+
+## 4.4.7.7
+
+### New features:
+
+* new global functions:
+  * `decode(arraybuffer,encoding): string`, character encoding/decoding 
+  * `encode(string,encoding): arraybuffer` 
+  * `btoa(arraybuffer): string` - Base64 encoding/decoding 
+  * `atob(string): arraybuffer`
+* `element.popup(element | vnode,options)` - popup generalization. This makes element.popupAt/For() functions obsolete;  
+* `element.animate(stepfunc,options)` - another mode of animate function.  
+* `element.state.occluded` - reports occlusion state of the element (partial or full invisibility);
+* `Window.elementAt(screenX,screenY)` - find DOM element by screen coordinates;
+* [reactor] + reactor-routing sample;
+* sdk.js/samples.sciter/input-elements-styling - custom styling demos;
+* sdk.js/samples.sciter/menu - menu samples;
+
+### Fixes:
+
+* fix of `element.onmouseXXXX()` handlers;
+* [reactor] tunelling key attribute;
+* scroll, 1ppx extra fix;
+* [virtual-list] initialization fix;
+* [css] fix of `currentcolor` handling;
+* [dom] fix of `element.attributes["style"] = ...` updates (memory consumption);
+
+## 4.4.7.6
+
+### New features:
+
+* [Clipboard](docs/md/Clipboard.md) support; 
+
+### Fixes:
+
+* `clearInterval()`` fix, see: https://sciter.com/forums/topic/calling-clearinterval-inside-setinterval-has-no-effect/
+* [zepto.js] compatibility, element.style.cssText prop support;
+* behavior: virtual-list fixes;
+
+## 4.4.7.5
+
+### New features:
+
+* [`element.animate()`](Element.md#animate) - various animation effects;
+* [`element.takeOff()`](Element.md#takeOff) - "airborn" DOM elements - replaced outside of host window;
+* [`element.popupFor()`](Element.md#popupFor) - showing popup elements using this one as anchor;
+* `node.parentWindow` - window that hosts this node;
+* `Window.this.parent`  - parent window of this one;
+* events "closerequest", "beforeunload", "close" on Window.this contain event.data of window.close(data) call;
+* [svg] SVG images used as back/foreground images inherit CSS variables from host document. This allows change colors/lengths from CSS of host document, see: samples.sciter/svg-icons demo.
+
+### Fixes:
+
+* [virtual-list] fix on initialization sequence: samples.sciter/virtual-list/test-table.htm
+* [reactor]  `render([props,kids])` - props and kids are not provided when rendering is don in response of `this.componentUpdate()`;
+* [reactor]  fix of attribute "value" handling;
+* graphics, path images, proper handling of repeat-x, repeat-y;
+* http client, support of "content-type" override;
+* Window's "size" event is generated after window size change *but* before DOM layout - can be used in cases when DOM needs to be changed in response of window size changing.
+
 ## 4.4.7.4
 
 ### New features:
